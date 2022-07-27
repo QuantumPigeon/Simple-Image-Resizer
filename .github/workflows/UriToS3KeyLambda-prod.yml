@@ -1,4 +1,4 @@
-name: deploy UriToS3Key code to lambda for prod
+name: deploy UriToS3Key code to prod
 on:
   push:
     paths:
@@ -36,5 +36,5 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
           aws_region: us-east-1
-          function_name: qp-prod-us-west-2-UriToS3KeyLambda
+          function_name: qp-prod-us-east-1-UriToS3KeyLambda
           zip_file: src/UriToS3Key/function.zip

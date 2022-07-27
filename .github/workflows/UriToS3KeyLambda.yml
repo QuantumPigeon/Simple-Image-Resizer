@@ -1,4 +1,4 @@
-name: deploy UriToS3Key code to lambda 
+name: deploy UriToS3Key code to dev 
 on:
   push:
     paths:

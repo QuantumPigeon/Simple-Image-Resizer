@@ -1,4 +1,4 @@
-name: deploy GetOrCreateImage code to lambda for prod
+name: deploy GetOrCreateImage code to prod
 on:
   push:
     paths:
@@ -36,5 +36,5 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
           aws_region: us-east-1
-          function_name: qp-prod-us-west-2-GetOrCreateImageLambda
+          function_name: qp-prod-us-east-1-GetOrCreateImageLambda
           zip_file: src/GetOrCreateImage/function.zip

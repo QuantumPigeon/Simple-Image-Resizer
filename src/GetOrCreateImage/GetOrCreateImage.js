@@ -35,7 +35,6 @@ const GetOrCreateImage = async event => {
   console.info("uri\n" + uri)
 
   let { width, height, sourceImage, nextExtension, scaling } = parse(querystring)
-  // const [bucket] = domainName.match(/.+(?=\.s3\.amazonaws\.com)/i)
   const [bucket] = domainName.match(/.+(?=\.s3\..*\.amazonaws\.com)/i)
 
   console.info("bucket\n" + bucket)
@@ -65,7 +64,6 @@ const GetOrCreateImage = async event => {
       console.info("imageObj.Metadata\n" + JSON.stringify(imageObj.Metadata, null, 4))
 
       if (nextExtension == '') {
-        // nextExtension = imageObj.Metadata["content-type"].replace(/^(image\/)/,'');
         nextExtension = imageObj.ContentType.replace(/^(image\/)/,'');
         console.info("nextExtension\n" + nextExtension)
         contentType = 'image/' + nextExtension
@@ -97,7 +95,8 @@ const GetOrCreateImage = async event => {
           })
       } catch(error) {
         console.error(`${errorMessage} ${error}`)
-        throw new Error(`${errorMessage} ${error}`)
+        console.error('Image resizing failed, returning original')
+        return imageObj.Body
       }
       return resizedImage
     })

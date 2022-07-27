@@ -1,4 +1,4 @@
-name: deploy GetOrCreateImage code to lambda 
+name: deploy GetOrCreateImage code to dev 
 on:
   push:
     paths:
