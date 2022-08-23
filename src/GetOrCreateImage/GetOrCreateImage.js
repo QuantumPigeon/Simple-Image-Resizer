@@ -79,8 +79,6 @@ const GetOrCreateImage = async event => {
       let isAnimated = (nextExtension == "gif") ? true : false;
       console.info("isAnimated \n" + isAnimated)
 
-      const redirectUrl = cloudFrontUrl + '/' + key
-
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
       try {
         resizedImage = Sharp(imageObj.Body, { animated: isAnimated })
@@ -120,6 +118,7 @@ const GetOrCreateImage = async event => {
           throw new Error(`Error while putting resized image '${uri}' into bucket: ${error}`)
         })
 
+      const redirectUrl = cloudFrontUrl + '/' + key  
       return {
         ...response,
         status: 301,
