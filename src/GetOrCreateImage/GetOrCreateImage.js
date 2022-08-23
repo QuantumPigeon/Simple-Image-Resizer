@@ -37,6 +37,10 @@ const GetOrCreateImage = async event => {
   let { width, height, sourceImage, nextExtension, scaling } = parse(querystring)
   const [bucket] = domainName.match(/.+(?=\.s3\..*\.amazonaws\.com)/i)
 
+  if (sourceImage == null) {
+    console.error('sourceImage is null or undefined') 
+}
+
   console.info("bucket\n" + bucket)
 
   console.info("sourceImage\n" + sourceImage)
@@ -61,7 +65,7 @@ const GetOrCreateImage = async event => {
       let resizedImage
       const errorMessage = `Error while resizing "${sourceKey}" to "${key}":`
 
-      console.info("imageObj.Metadata\n" + JSON.stringify(imageObj.Metadata, null, 4))
+      console.info("imageObj.ContentType\n" + JSON.stringify(imageObj.ContentType, null, 4))
 
       if (nextExtension == '') {
         nextExtension = imageObj.ContentType.replace(/^(image\/)/,'');
@@ -115,7 +119,7 @@ const GetOrCreateImage = async event => {
         })
 
       return {
-        ...response,
+        // ...response,
         status: 200,
         statusDescription: 'Found',
         body: imageBuffer.toString('base64'),
