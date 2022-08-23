@@ -34,7 +34,7 @@ const GetOrCreateImage = async event => {
   console.info("domainName\n" + domainName)
   console.info("uri\n" + uri)
 
-  let { width, height, sourceImage, nextExtension, scaling } = parse(querystring)
+  let { width, height, sourceImage, nextExtension, scaling, cloudFrontUrl } = parse(querystring)
   const [bucket] = domainName.match(/.+(?=\.s3\..*\.amazonaws\.com)/i)
 
   if (sourceImage == null) {
@@ -79,6 +79,8 @@ const GetOrCreateImage = async event => {
       let isAnimated = (nextExtension == "gif") ? true : false;
       console.info("isAnimated \n" + isAnimated)
 
+      const redirectUrl = cloudFrontUrl + '/' + key
+
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
       try {
         resizedImage = Sharp(imageObj.Body, { animated: isAnimated })
@@ -119,14 +121,15 @@ const GetOrCreateImage = async event => {
         })
 
       return {
-        // ...response,
-        status: 200,
-        statusDescription: 'Found',
-        body: imageBuffer.toString('base64'),
+        ...response,
+        status: 301,
+        statusDescription: 'Moved Permanently',
+        // body: imageBuffer.toString('base64'),
         bodyEncoding: 'base64',
         headers: {
           ...response.headers,
-          'content-type': [{ key: 'Content-Type', value: contentType }]
+          'location': [{ key: 'Location', value: redirectUrl }],
+          'x-reason': [{ key: 'X-Reason', value: 'Generated.' }],
         }
       }
     })

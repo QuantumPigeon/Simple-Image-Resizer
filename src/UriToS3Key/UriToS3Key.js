@@ -12,6 +12,7 @@ const UriToS3Key = event => {
   console.info("event\n" + JSON.stringify(event))
 
   const { request, request: { headers, querystring, uri } } = event.Records[0].cf
+  const cloudFrontUrl = event.Records[0].cf.config.distributionDomainName
 
   console.info("headers\n" + headers)
   console.info("querystring\n" + querystring)
@@ -47,6 +48,7 @@ const UriToS3Key = event => {
     `sourceImage=${uri}`,
     `nextExtension=${nextExtension}`,
     `scaling=${scaling}`,
+    `cloudFrontUrl=${cloudFrontUrl}`,
   ].join('&')
 
   console.info("request\n" + JSON.stringify(request))
