@@ -36,8 +36,8 @@ const UriToS3Key = event => {
   const acceptHeader = Array.isArray(headers.accept) ? headers.accept[0].value : ''
   const nextExtension = !format ? '' : format
 
-  const dimensions = `${width}x${height}`
-  const key = nextExtension == '' ? `${prefix}/${dimensions}/${scaling}/${imageName}` : `${prefix}/${dimensions}/${scaling}/${imageName}.${nextExtension}`
+  const dimensions = `${newWidth}x${newHeight}`
+  const key = nextExtension == '' ? `${prefix}/${dimensions}/${new_scaling}/${imageName}` : `${prefix}/${dimensions}/${new_scaling}/${imageName}.${nextExtension}`
 
   console.info("key\n" + key)
 
