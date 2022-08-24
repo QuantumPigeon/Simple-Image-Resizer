@@ -119,7 +119,7 @@ const GetOrCreateImage = async event => {
         })
 
       const redirectUrl = cloudFrontUrl + '/' + key  
-      log.info("redirectUrl \n" + redirectUrl)
+      console.info("redirectUrl \n" + redirectUrl)
       return {
         ...response,
         status: 301,
