@@ -20,10 +20,14 @@ const UriToS3Key = event => {
 
   const { h: height, w: width, f: format, s: scaling} = parse(querystring)
 
+  if (!width && !height && !format) {
+    return request
+  }
+
   var newWidth = (!width || isNaN(parseInt(width, 10))) ? 'default' : width
   var newHeight = (!height || isNaN(parseInt(height, 10))) ? 'default' : height
 
-  const new_scaling = (!scaling) ? "cover" : scaling
+  var new_scaling = (!scaling) ? "cover" : scaling
 
   const [,prefix, imageName] = uri.match(/(.*)\/(.*)/)
   console.info("prefix\n" + prefix)
