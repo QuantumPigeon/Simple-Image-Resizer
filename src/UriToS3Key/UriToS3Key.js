@@ -20,20 +20,10 @@ const UriToS3Key = event => {
 
   const { h: height, w: width, f: format, s: scaling} = parse(querystring)
 
-  if (!width || isNaN(parseInt(width, 10))) {
-    width = 'default'
-  }
-  if (!height || isNaN(parseInt(height, 10))) {
-    height = 'default'
-  }
-
   const newWidth = (!width || isNaN(parseInt(width, 10))) ? 'default' : width
   const newHeight = (!height || isNaN(parseInt(height, 10))) ? 'default' : height
 
-  if (!scaling) {
-    scaling = "cover"
-    // throw new Error(`Query Parameter s (scaling type) cannot be empty for resizing operation.`)
-  }
+  const new_scaling = (!scaling) ? "cover" : scaling
 
   const [,prefix, imageName] = uri.match(/(.*)\/(.*)/)
   console.info("prefix\n" + prefix)
@@ -53,7 +43,7 @@ const UriToS3Key = event => {
     `height=${newHeight}`,
     `sourceImage=${uri}`,
     `nextExtension=${nextExtension}`,
-    `scaling=${scaling}`,
+    `scaling=${new_scaling}`,
     `cloudFrontUrl=${cloudFrontUrl}`,
   ].join('&')
 
