@@ -20,8 +20,8 @@ const UriToS3Key = event => {
 
   const { h: height, w: width, f: format, s: scaling} = parse(querystring)
 
-  const newWidth = (!width || isNaN(parseInt(width, 10))) ? 'default' : width
-  const newHeight = (!height || isNaN(parseInt(height, 10))) ? 'default' : height
+  var newWidth = (!width || isNaN(parseInt(width, 10))) ? 'default' : width
+  var newHeight = (!height || isNaN(parseInt(height, 10))) ? 'default' : height
 
   const new_scaling = (!scaling) ? "cover" : scaling
 
