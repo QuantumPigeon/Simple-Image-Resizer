@@ -39,6 +39,17 @@ const GetOrCreateImage = async event => {
 
   if (sourceImage == null) {
     console.error('sourceImage is null or undefined') 
+    return {
+      ...response,
+      status: 404,
+      statusDescription: 'Not Found',
+      body: 'sourceImage is null or undefined',
+      bodyEncoding: 'text',
+      headers: {
+        ...response.headers,
+        'content-type': [{ key: 'Content-Type', value: 'text/plain' }]
+      }
+    }
 }
 
   console.info("bucket\n" + bucket)
@@ -118,12 +129,12 @@ const GetOrCreateImage = async event => {
           throw new Error(`Error while putting resized image '${uri}' into bucket: ${error}`)
         })
 
-      const redirectUrl = cloudFrontUrl + '/' + key  
+      const redirectUrl = 'https://' + cloudFrontUrl + '/' + key  
       console.info("redirectUrl \n" + redirectUrl)
       return {
         ...response,
-        status: 301,
-        statusDescription: 'Moved Permanently',
+        status: 302,
+        statusDescription: 'Moved',
         // body: imageBuffer.toString('base64'),
         bodyEncoding: 'base64',
         headers: {
