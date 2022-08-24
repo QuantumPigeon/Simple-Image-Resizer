@@ -50,7 +50,13 @@ const GetOrCreateImage = async event => {
         'content-type': [{ key: 'Content-Type', value: 'text/plain' }]
       }
     }
-}
+  }
+
+  width = parseInt(width, 10)
+  if (isNaN(width)) width = null;
+
+  height = parseInt(height, 10)
+  if (isNaN(height)) height = null;
 
   console.info("bucket\n" + bucket)
 
@@ -64,11 +70,6 @@ const GetOrCreateImage = async event => {
   console.info("key\n" + key)
   const sourceKey = sourceImage.replace(/^\//, '')
   console.info("sourceKey\n" + sourceKey)
-
-  height = parseInt(height, 10)
-  width = parseInt(width, 10)
-
-  if (!width || !height) return response
 
   return S3.getObject({ Bucket: bucket, Key: sourceKey })
     .promise()
