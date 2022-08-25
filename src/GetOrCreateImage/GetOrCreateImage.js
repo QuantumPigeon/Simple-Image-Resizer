@@ -117,21 +117,22 @@ const GetOrCreateImage = async event => {
       return resizedImage
     })
     .then(async imageBuffer => {
-      await S3.putObject({
+      let s3_response = await S3.putObject({
         Body: imageBuffer,
         Bucket: bucket,
         ContentType: contentType,
         Key: key,
         StorageClass: 'STANDARD'
-      })
-        .promise()
+      }).promise()
         .catch(error => {
           console.error(`Error while putting resized image '${uri}' into bucket:${error}`)
           throw new Error(`Error while putting resized image '${uri}' into bucket: ${error}`)
         })
 
+      console.info("s3_response \n" + s3_response)
       const redirectUrl = 'https://' + cloudFrontUrl + '/' + key  
       console.info("redirectUrl \n" + redirectUrl)
+      
       return {
         ...response,
         status: 302,
