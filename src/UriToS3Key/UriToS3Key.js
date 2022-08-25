@@ -12,6 +12,7 @@ const UriToS3Key = event => {
   console.info("event\n" + JSON.stringify(event))
 
   const { request, request: { headers, querystring, uri } } = event.Records[0].cf
+  const cloudFrontUrl = event.Records[0].cf.config.distributionDomainName
 
   console.info("headers\n" + headers)
   console.info("querystring\n" + querystring)
@@ -19,34 +20,35 @@ const UriToS3Key = event => {
 
   const { h: height, w: width, f: format, s: scaling} = parse(querystring)
 
-  if (!width || isNaN(parseInt(width, 10))) return request
-  if (!height || isNaN(parseInt(width, 10))) return request
-
-  if (!scaling) {
-    throw new Error(`Query Parameter s (scaling type) cannot be empty for resizing operation.`)
+  if (!width && !height && !format) {
+    return request
   }
+
+  var newWidth = (!width || isNaN(parseInt(width, 10))) ? 'default' : width
+  var newHeight = (!height || isNaN(parseInt(height, 10))) ? 'default' : height
+
+  var new_scaling = (!scaling) ? "cover" : scaling
 
   const [,prefix, imageName] = uri.match(/(.*)\/(.*)/)
   console.info("prefix\n" + prefix)
   console.info("imageName\n" + imageName)
 
-  const acceptHeader = Array.isArray(headers.accept)
-    ? headers.accept[0].value
-    : ''
+  const acceptHeader = Array.isArray(headers.accept) ? headers.accept[0].value : ''
   const nextExtension = !format ? '' : format
 
-  const dimensions = `${width}x${height}`
-  const key = nextExtension == '' ? `${prefix}/${dimensions}/${scaling}/${imageName}` : `${prefix}/${dimensions}/${scaling}/${imageName}.${nextExtension}`
+  const dimensions = `${newWidth}x${newHeight}`
+  const key = nextExtension == '' ? `${prefix}/${dimensions}/${new_scaling}/${imageName}` : `${prefix}/${dimensions}/${new_scaling}/${imageName}.${nextExtension}`
 
   console.info("key\n" + key)
 
   request.uri = key
   request.querystring = [
-    `width=${width}`,
-    `height=${height}`,
+    `width=${newWidth}`,
+    `height=${newHeight}`,
     `sourceImage=${uri}`,
     `nextExtension=${nextExtension}`,
-    `scaling=${scaling}`,
+    `scaling=${new_scaling}`,
+    `cloudFrontUrl=${cloudFrontUrl}`,
   ].join('&')
 
   console.info("request\n" + JSON.stringify(request))

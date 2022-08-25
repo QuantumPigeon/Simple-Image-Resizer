@@ -34,8 +34,29 @@ const GetOrCreateImage = async event => {
   console.info("domainName\n" + domainName)
   console.info("uri\n" + uri)
 
-  let { width, height, sourceImage, nextExtension, scaling } = parse(querystring)
+  let { width, height, sourceImage, nextExtension, scaling, cloudFrontUrl } = parse(querystring)
   const [bucket] = domainName.match(/.+(?=\.s3\..*\.amazonaws\.com)/i)
+
+  if (sourceImage == null) {
+    console.error('sourceImage is null or undefined') 
+    return {
+      ...response,
+      status: 404,
+      statusDescription: 'Not Found',
+      body: 'sourceImage is null or undefined',
+      bodyEncoding: 'text',
+      headers: {
+        ...response.headers,
+        'content-type': [{ key: 'Content-Type', value: 'text/plain' }]
+      }
+    }
+  }
+
+  width = parseInt(width, 10)
+  if (isNaN(width)) width = null;
+
+  height = parseInt(height, 10)
+  if (isNaN(height)) height = null;
 
   console.info("bucket\n" + bucket)
 
@@ -50,18 +71,13 @@ const GetOrCreateImage = async event => {
   const sourceKey = sourceImage.replace(/^\//, '')
   console.info("sourceKey\n" + sourceKey)
 
-  height = parseInt(height, 10)
-  width = parseInt(width, 10)
-
-  if (!width || !height) return response
-
   return S3.getObject({ Bucket: bucket, Key: sourceKey })
     .promise()
     .then(imageObj => {
       let resizedImage
       const errorMessage = `Error while resizing "${sourceKey}" to "${key}":`
 
-      console.info("imageObj.Metadata\n" + JSON.stringify(imageObj.Metadata, null, 4))
+      console.info("imageObj.ContentType\n" + JSON.stringify(imageObj.ContentType, null, 4))
 
       if (nextExtension == '') {
         nextExtension = imageObj.ContentType.replace(/^(image\/)/,'');
@@ -101,28 +117,32 @@ const GetOrCreateImage = async event => {
       return resizedImage
     })
     .then(async imageBuffer => {
-      await S3.putObject({
+      let s3_response = await S3.putObject({
         Body: imageBuffer,
         Bucket: bucket,
         ContentType: contentType,
         Key: key,
         StorageClass: 'STANDARD'
-      })
-        .promise()
+      }).promise()
         .catch(error => {
           console.error(`Error while putting resized image '${uri}' into bucket:${error}`)
           throw new Error(`Error while putting resized image '${uri}' into bucket: ${error}`)
         })
 
+      console.info("s3_response \n" + s3_response)
+      const redirectUrl = 'https://' + cloudFrontUrl + '/' + key + '?t=' + Date.now()  
+      console.info("redirectUrl \n" + redirectUrl)
+
       return {
         ...response,
-        status: 200,
-        statusDescription: 'Found',
-        body: imageBuffer.toString('base64'),
+        status: 302,
+        statusDescription: 'Moved',
+        // body: imageBuffer.toString('base64'),
         bodyEncoding: 'base64',
         headers: {
           ...response.headers,
-          'content-type': [{ key: 'Content-Type', value: contentType }]
+          'location': [{ key: 'Location', value: redirectUrl }],
+          'x-reason': [{ key: 'X-Reason', value: 'Generated.' }],
         }
       }
     })
