@@ -130,9 +130,9 @@ const GetOrCreateImage = async event => {
         })
 
       console.info("s3_response \n" + s3_response)
-      const redirectUrl = 'https://' + cloudFrontUrl + '/' + key  
+      const redirectUrl = 'https://' + cloudFrontUrl + '/' + key + '?t=' + Date.now()  
       console.info("redirectUrl \n" + redirectUrl)
-      
+
       return {
         ...response,
         status: 302,
