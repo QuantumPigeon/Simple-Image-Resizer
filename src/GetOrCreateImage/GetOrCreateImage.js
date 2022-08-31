@@ -79,16 +79,17 @@ const GetOrCreateImage = async event => {
 
       console.info("imageObj.ContentType\n" + JSON.stringify(imageObj.ContentType, null, 4))
 
+      let originalFormat = imageObj.ContentType.replace(/^(image\/)/,'');
       if (nextExtension == '') {
-        nextExtension = imageObj.ContentType.replace(/^(image\/)/,'');
+        nextExtension = originalFormat;
         console.info("nextExtension\n" + nextExtension)
         contentType = 'image/' + nextExtension
-        console.info("contentType\n" + contentType)
+        console.info("New contentType\n" + contentType)
         key = key + "." + nextExtension
         console.info("key\n" + key)
       }
 
-      let isAnimated = (nextExtension == "gif") ? true : false;
+      let isAnimated = (originalFormat == "gif") ? true : false;
       console.info("isAnimated \n" + isAnimated)
 
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
