@@ -95,6 +95,7 @@ const GetOrCreateImage = async event => {
       // Required try/catch because Sharp.catch() doesn't seem to actually catch anything. 
       try {
         resizedImage = Sharp(imageObj.Body, { animated: isAnimated })
+          .rotate()
           .resize(width, height, {
             withoutEnlargement: true,
             fit: scaling,
