@@ -126,8 +126,9 @@ const GetOrCreateImage = async event => {
         Key: key,
         StorageClass: 'STANDARD',
         Metadata: {
-          operation: "resize"
-        }
+          "operation": "resize", 
+          "creator": "tranquility"
+         }       
       }).promise()
         .catch(error => {
           console.error(`Error while putting resized image '${uri}' into bucket:${error}`)
