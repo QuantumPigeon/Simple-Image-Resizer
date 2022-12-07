@@ -135,7 +135,7 @@ const GetOrCreateImage = async event => {
           throw new Error(`Error while putting resized image '${uri}' into bucket: ${error}`)
         })
 
-      console.info("s3_response \n" + s3_response)
+      console.info("s3_response \n" + JSON.stringify(s3_response, null, 4))
       const redirectUrl = 'https://' + cloudFrontUrl + '/' + key + '?t=' + Date.now()  
       console.info("redirectUrl \n" + redirectUrl)
 
